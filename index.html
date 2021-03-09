@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <title>Multi Line Chart</title>
     <script type="text/javascript" src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.10.0.min.js"></script>
     <link rel="stylesheet" type="text/css" href="styles.css">
     <style></style>
 </head>
@@ -95,11 +96,11 @@
             //----------------------------legend-----------------------------//
 
             var legend = lsvg.selectAll(".legend")
-                .data(theData.map(function (d) { return d.id; }))
+                .data(theData.map(function (d, i) { return d.values[i].rate; }))
                 .enter().append("g")
                 .attr("class", "legend")
                 .attr("transform", function (d, i) {
-                    return "translate(" + (i % 5 * 150 + (width / 4)) + "," + (Math.floor(i / 5) * 40 + 10) + ")";
+                    return "translate(" + (i % 2 * 150 + (width / 4)) + "," + (Math.floor(i / 2) * 40 + 10) + ")";
                 })
                 .style("opacity", "0");
 
@@ -119,170 +120,35 @@
         }
         //-----------------------------DATA-----------------------------//
         function loadData(tsvFile) {
-            var data = [
-                {
-                    "categorie": "Student",
-                    "values": [
-                        {
-                            "value": 0,
-                            "rate": "Not at all"
-                        },
-                        {
-                            "value": 4,
-                            "rate": "Not very much"
-                        },
-                        {
-                            "value": 12,
-                            "rate": "Medium"
-                        },
-                        {
-                            "value": 6,
-                            "rate": "Very much"
-                        },
-                        {
-                            "value": 0,
-                            "rate": "Tremendously"
-                        }
-                    ]
-                },
-                {
-                    "categorie": "Liberal Profession",
-                    "values": [
-                        {
-                            "value": 1,
-                            "rate": "Not at all"
-                        },
-                        {
-                            "value": 21,
-                            "rate": "Not very much"
-                        },
-                        {
-                            "value": 13,
-                            "rate": "Medium"
-                        },
-                        {
-                            "value": 18,
-                            "rate": "Very much"
-                        },
-                        {
-                            "value": 6,
-                            "rate": "Tremendously"
-                        }
-                    ]
-                },
-                {
-                    "categorie": "Salaried Staff",
-                    "values": [
-                        {
-                            "value": 3,
-                            "rate": "Not at all"
-                        },
-                        {
-                            "value": 22,
-                            "rate": "Not very much"
-                        },
-                        {
-                            "value": 6,
-                            "rate": "Medium"
-                        },
-                        {
-                            "value": 15,
-                            "rate": "Very much"
-                        },
-                        {
-                            "value": 3,
-                            "rate": "Tremendously"
-                        }
-                    ]
-                },
-                {
-                    "categorie": "Employee",
-                    "values": [
-                        {
-                            "value": 12,
-                            "rate": "Not at all"
-                        },
-                        {
-                            "value": 7,
-                            "rate": "Not very much"
-                        },
-                        {
-                            "value": 18,
-                            "rate": "Medium"
-                        },
-                        {
-                            "value": 13,
-                            "rate": "Very much"
-                        },
-                        {
-                            "value": 6,
-                            "rate": "Tremendously"
-                        }
-                    ]
-                },
-                {
-                    "categorie": "Craftsman",
-                    "values": [
-                        {
-                            "value": 6,
-                            "rate": "Not at all"
-                        },
-                        {
-                            "value": 15,
-                            "rate": "Not very much"
-                        },
-                        {
-                            "value": 9,
-                            "rate": "Medium"
-                        },
-                        {
-                            "value": 12,
-                            "rate": "Very much"
-                        },
-                        {
-                            "value": 3,
-                            "rate": "Tremendously"
-                        }
-                    ]
-                },
-                {
-                    "categorie": "Inactive",
-                    "values": [
-                        {
-                            "value": 6,
-                            "rate": "Not at all"
-                        },
-                        {
-                            "value": 6,
-                            "rate": "Not very much"
-                        },
-                        {
-                            "value": 6,
-                            "rate": "Medium"
-                        },
-                        {
-                            "value": 2,
-                            "rate": "Very much"
-                        },
-                        {
-                            "value": 3,
-                            "rate": "Tremendously"
-                        }
-                    ]
-                }
-            ]
-            theData = data;
-            //----------------------------SCALES----------------------------//
-            var categoriesNames = data.map(function (d) { return d.categorie; });
-            var rateNames = data[0].values.map(function (d) { return d.rate; });
 
-            x0.domain(categoriesNames);
-            x1.domain(rateNames)
+            const url = "https://script.google.com/a/macros/sph.com.sg/s/AKfycbwVjgt__c_7WUT0jv4UtfPlEcBHx8h2PnXgg_aCWHEGEzLNXHJWg84jmI6Ou0uBycBjrA/exec"
+            $.getJSON(url + "?callback=?",
+                { method: "vertical" },
+                function (data) {
+                    var slices = data.slice(1).map(function (id, x) {
+                        return {
+                            categorie: id[0],
+                            values: data[0].slice(1).map(function (d, i) {
+                                return {
+                                    value: id[i + 1],
+                                    rate: d
+                                }
+                            })
+                        };
+                    });
 
-            y.domain([0, d3.max(data, function (categorie) { return d3.max(categorie.values, function (d) { return d.value; }); })]);
+                    theData = slices;
 
-            draw();
+                    //----------------------------SCALES----------------------------//
+                    var categoriesNames = theData.map(function (d) { return d.categorie; });
+                    var rateNames = theData[0].values.map(function (d) { return d.rate; });
 
+                    x0.domain(categoriesNames);
+                    x1.domain(rateNames)
+
+                    y.domain([0, d3.max(theData, function (categorie) { return d3.max(categorie.values, function (d) { return d.value; }); })]);
+                    draw();
+                });
         }
 
         //mouseover event handler function

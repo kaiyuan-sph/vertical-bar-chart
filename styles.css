@@ -6,6 +6,10 @@ text {
     fill: white;
 }
 
+#legend text {
+    fill: black;
+}
+
 /* AXES */
 
 /* ticks */
