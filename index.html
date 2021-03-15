@@ -27,7 +27,7 @@
 
         //-----------------------------DRAW-----------------------------//
         function draw() {
-            var svg = d3.select("div#container").append("svg").style("width", "100%").style("height", "100vh")
+            var svg = d3.select("div#container").append("svg").style("width", "100%").style("height", "100%")
             var lsvg = d3.select("div#legend").append("svg").style("width", "100%").style("height", "100%")
             var g = svg.append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
@@ -100,7 +100,7 @@
                 .enter().append("g")
                 .attr("class", "legend")
                 .attr("transform", function (d, i) {
-                    return "translate(" + (i % 2 * 150 + (width / 4)) + "," + (Math.floor(i / 2) * 40 + 10) + ")";
+                    return "translate(" + (i % 2 * 150 + 10) + "," + (Math.floor(i / 2) * 40 + 10) + ")";
                 })
                 .style("opacity", "0");
 
@@ -165,7 +165,7 @@
             d3.select(this.parentNode)
                 .append("text")
                 .style("color", "white")
-                .attr("transform", "translate(53, 30)")
+                .attr("transform", "translate(45, 30)")
                 .attr('class', 'val')
                 .attr('x', function () {
                     return x1(d.rate);
